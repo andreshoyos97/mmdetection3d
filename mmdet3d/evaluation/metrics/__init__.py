@@ -8,6 +8,8 @@ from .panoptic_seg_metric import PanopticSegMetric  # noqa: F401,F403
 from .seg_metric import SegMetric  # noqa: F401,F403
 from .waymo_metric import WaymoMetric  # noqa: F401,F403
 
+from .amdg_metric import AMDGMetric
+
 __all__ = [
     'KittiMetric', 'NuScenesMetric', 'IndoorMetric', 'LyftMetric', 'SegMetric',
     'InstanceSegMetric', 'WaymoMetric', 'PanopticSegMetric'

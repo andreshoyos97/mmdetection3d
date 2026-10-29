@@ -24,6 +24,7 @@ from .transforms import (AffineResize, BackgroundPointsFilter, GlobalAlignment,
                          RandomShiftScale, Resize3D, VoxelBasedPointSampler)
 from .utils import get_loading_pipeline
 from .waymo_dataset import WaymoDataset
+from .amdg_dataset import AMDGDataset
 
 __all__ = [
     'KittiDataset', 'CBGSDataset', 'NuScenesDataset', 'LyftDataset',
