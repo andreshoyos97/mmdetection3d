@@ -178,6 +178,13 @@ class Det3DDataPreprocessor(DetDataPreprocessor):
                 voxel_dict = self.voxelize(inputs['points'], data_samples)
                 batch_inputs['voxels'] = voxel_dict
 
+               
+        # Forward radar point structures and transfer them to the target CUDA device
+        if 'radar_points' in inputs:
+            batch_inputs['radar_points'] = [
+                _points.to(self.device) for _points in inputs['radar_points']
+            ]
+
         if 'imgs' in inputs:
             imgs = inputs['imgs']
 

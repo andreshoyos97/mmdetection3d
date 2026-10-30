@@ -1,4 +1,5 @@
 # configs/pointpillars/pointpillars_amdg.py
+# usage: python tools/train.py configs/pointpillars/pointpillars_amdg.py
 _base_ = [
     '../_base_/models/pointpillars_hv_secfpn_kitti.py',
     '../_base_/schedules/cyclic-40e.py',

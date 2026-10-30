@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
 from typing import List, Optional, Union
+import os
 
 import mmcv
 import mmengine
@@ -13,6 +14,8 @@ from mmengine.fileio import get
 from mmdet3d.registry import TRANSFORMS
 from mmdet3d.structures.bbox_3d import get_box_type
 from mmdet3d.structures.points import BasePoints, get_points_type
+
+from mmdet3d.structures.points import LiDARPoints
 
 
 @TRANSFORMS.register_module()
@@ -268,6 +271,46 @@ class LoadImageFromFileMono3D(LoadImageFromFile):
         results['img'] = img
         results['img_shape'] = img.shape[:2]
         results['ori_shape'] = img.shape[:2]
+
+        return results
+    
+    
+
+
+@TRANSFORMS.register_module()
+class LoadRadarPointsFromFile(BaseTransform):
+    """Loads sparse radar point clouds from independent binary files."""
+
+    def __init__(self, coord_type='LIDAR', load_dim=10, use_dim=(0, 1, 2, 3, 4, 5)):
+        self.coord_type = coord_type
+        self.load_dim = load_dim
+        # E.g., [x, y, z, v_r, rcs, snr]
+        self.use_dim = use_dim if isinstance(use_dim, list) else list(use_dim)
+
+    def transform(self, results: dict) -> dict:
+        data_root = results.get('data_root', '')
+
+        # Collect all radar returns for this frame (front + rear)
+        all_radar_pts = []
+        for r_name, r_info in results.get('radars', {}).items():
+            radar_path = os.path.join(data_root, r_info['radar_path'])
+            if os.path.exists(radar_path):
+                # Load the binary float32 file
+                pts = np.fromfile(radar_path, dtype=np.float32).reshape(-1, self.load_dim)
+                pts = pts[:, self.use_dim]
+                all_radar_pts.append(pts)
+
+        if all_radar_pts:
+            merged_pts = np.concatenate(all_radar_pts, axis=0)
+        else:
+            merged_pts = np.zeros((0, len(self.use_dim)), dtype=np.float32)
+
+        # Wrap points into LiDARPoints directly to avoid property setter collision
+        results['radar_points'] = LiDARPoints(
+            merged_pts,
+            points_dim=merged_pts.shape[-1],
+            attribute_dims=None
+        )
 
         return results
 

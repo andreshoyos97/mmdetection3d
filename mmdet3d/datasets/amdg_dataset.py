@@ -41,6 +41,12 @@ class AMDGDataset(Det3DDataset):
         if 'lidar_points' in info and 'lidar_path' in info['lidar_points']:
             info['lidar_path'] = info['lidar_points']['lidar_path']
             info['num_pts_feats'] = info['lidar_points'].get('num_pts_feats', 4)
+        
+        if 'images' in raw_data_info:
+            info['images'] = raw_data_info['images']
+        
+        if 'radars' in raw_data_info:
+            info['radars'] = raw_data_info['radars']
 
         # Synchronize labels for dataset logging and summary statistics
         for inst in info.get('instances', []):
