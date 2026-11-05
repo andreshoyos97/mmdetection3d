@@ -10,11 +10,11 @@ _base_ = [
 # Point Cloud Range & Grid Geometry
 # [x_min, y_min, z_min, x_max, y_max, z_max]
 # ==============================================================================
-point_cloud_range = [-80.0, -25.0, -2.0, 100.0, 25.0, 4.0]
-voxel_size = [0.25, 0.25, 6.0]
-grid_shape = [200, 720]  # [Ny, Nx]
+point_cloud_range = [-70.0, -25.2, -2.0, 70.0, 25.2, 6.0]
+voxel_size = [0.1, 0.1, 8.0]
+grid_shape = [504, 1400]  # [Ny, Nx]
 
-data_root = 'data/amdg/test_mmdet3d_gen/'
+data_root = 'data/amdg'
 class_names = ['car']
 metainfo = dict(classes=class_names, categories={'car': 0})
 dataset_type = 'AMDGDataset'
@@ -58,10 +58,10 @@ model = dict(
         type='Det3DDataPreprocessor',
         voxel=True,
         voxel_layer=dict(
-            max_num_points=32,
+            max_num_points=20,
             point_cloud_range=point_cloud_range,
             voxel_size=voxel_size,
-            max_voxels=(16000, 40000)
+            max_voxels=(70000, 90000)
         )
     ),
     voxel_encoder=dict(
@@ -86,7 +86,7 @@ model = dict(
         assign_per_class=True,
         anchor_generator=dict(
             type='AlignedAnchor3DRangeGenerator',
-            ranges=[[-80.0, -25.0, 0.42, 100.0, 25.0, 0.42]],
+            ranges=[[-70.0, -25.0, 0.42, 70.0, 25.0, 0.42]],
             sizes=[[4.876, 1.93, 1.50]],
             rotations=[0, 1.57],
             reshape_out=False
@@ -134,7 +134,7 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='amdg_infos_train.pkl',
+        ann_file='test_multiple/amdg_infos_train.pkl',
         data_prefix=dict(pts=''),
         pipeline=train_pipeline,
         modality=dict(use_lidar=True, use_camera=False),
@@ -152,7 +152,7 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='amdg_infos_val.pkl',
+        ann_file='test_multiple/amdg_infos_val.pkl',
         data_prefix=dict(pts=''),
         pipeline=test_pipeline,
         modality=dict(use_lidar=True, use_camera=False),
